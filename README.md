@@ -1,13 +1,4 @@
-[[source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
-name = "pypi"
+# Baby Synth
 
-[packages]
-simpleaudio = "*"
-numpy = "*"
+Baby のための Simple シンセ
 
-[dev-packages]
-
-[requires]
-python_version = "3"
