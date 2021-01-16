@@ -1,6 +1,7 @@
 import argparse
-
+print("loading ..")
 import numpy as np
+print("Loaded")
 import simpleaudio as sa
 
 parser = argparse.ArgumentParser()
@@ -8,9 +9,9 @@ parser.add_argument("--fs", default=44100, help="Sampling Frequency")
 parser.add_argument("--nbit", default=16, help="Number of Bit")
 
 parser.add_argument("--dur", default=5., help="Duration")
-parser.add_argument("--f", default=300, help="Main Frequency")
+parser.add_argument("--f", default=1000, help="Main Frequency")
 parser.add_argument("--fbeat", default=2, help="Frequency of Beat")
-parser.add_argument("--ntri", default=100, help="Number of Triangle")
+parser.add_argument("--ntri", default=1, help="Number of Triangle")
 parser.add_argument("--amp", default=1, help="amplitude")
 
 args = parser.parse_args()
@@ -25,45 +26,33 @@ fbeat = float(args.fbeat)
 Ntri = int(args.ntri)
 AMP = float(args.amp)
 
-
-def clip(v, a, b):
-    if v < a:
-        return a
-    elif b < v:
-        return b
-    return v
-assert clip(-1, 0, 1) == 0.
-assert clip(0.5, 0, 1) == 0.5
-assert clip(1.1, 0, 1) == 1.
-
-dur = clip(dur, 1, 10)
-f = clip(f, 30, 10000)
-fbeat = clip(fbeat, 1, 100)
-Ntri = clip(Ntri, 1, 100)
-AMP = clip(AMP, 0, 1)
+dur = np.clip(dur, 1, 10)
+f = np.clip(f, 30, 10000)
+fbeat = np.clip(fbeat, 1, 100)
+Ntri = np.clip(Ntri, 1, 100)
+AMP = np.clip(AMP, 0, 1)
 
 # Times
 Nt = int(FS * dur)
-n = np.arange(Nt)
+t = np.linspace(0, dur, Nt, False, dtype=np.float)
 
 # Tone
-S = 0
+buf = np.zeros((Nt, Ntri), dtype=np.float)
+
 for tr in range(Ntri):
-    S += np.sin(2 * np.pi * (2*tr+1)*f * n / FS)
-S /= Ntri
+    buf[:, tr] = np.sin(2 * np.pi * (2*tr+1)*f * t)
+
+S = buf.mean(axis=1)
 
 # Rhyzm (Harf sin)
-S *= np.sin(2 * np.pi * fbeat * n / FS).clip(0, 1)
+S *= np.sin(2 * np.pi * fbeat * t).clip(0, 1)
 
-# Clip
-S = np.clip(S, -1, 1)
+# Normalize
+S *= 32767 / np.max(np.abs(S)) 
 
-# Convert to Integer
-Bit = (2**Nbit)/2
-S = Bit * S
+# Protected from Clipping
+S = 0.5 * S
 
-# Volume
-S = AMP * S
 
 # Integer space
 audio = S.astype(np.int16)
@@ -71,5 +60,17 @@ audio = S.astype(np.int16)
 play_obj = sa.play_buffer(audio, 1, int(Nbit/8), int(FS))
 
 play_obj.wait_done()
+
+
+
+
+
+
+
+
+
+
+
+
 
 

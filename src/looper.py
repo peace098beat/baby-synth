@@ -9,7 +9,7 @@ def read_AD():
     params["dur"]   = 8.2
     params["f"]     = 400
     params["fbeat"] = 2
-    params["ntri"]  = 30
+    params["ntri"]  = 3
     params["amp"]   = 0.5
     params["tempo_dur"] = 2.2
 
@@ -30,8 +30,8 @@ def main():
             params = read_AD()
 
             cmd = [
-                "pipenv", "run", "python", "b.py",
-                    "--fs", "44100",
+                "python3", "b.py",
+                    "--fs", "22050",
                     "--nbit", "16",
                     "--dur",    str(params["dur"]),
                     "--f",      str(params["f"]),

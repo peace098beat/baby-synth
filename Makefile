@@ -7,3 +7,7 @@ watch:
 pep8:
 	pipenv run isort a.py
 	pipenv run black a.py --line-length 99
+
+
+deploy:
+	pipenv lock -r > requirements.txt
