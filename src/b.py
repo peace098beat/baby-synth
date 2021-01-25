@@ -38,7 +38,6 @@ t = np.linspace(0, dur, Nt, False, dtype=np.float)
 
 # Tone
 buf = np.zeros((Nt, Ntri), dtype=np.float)
-
 for tr in range(Ntri):
     buf[:, tr] = np.sin(2 * np.pi * (2*tr+1)*f * t)
 
